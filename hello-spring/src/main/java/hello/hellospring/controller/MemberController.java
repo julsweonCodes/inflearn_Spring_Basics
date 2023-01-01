@@ -1,9 +1,15 @@
 package hello.hellospring.controller;
 
 
+import hello.hellospring.domain.Member;
 import hello.hellospring.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.List;
 
 @Controller // <- 자동으로 스프링이 뜰 때 객체가 생성되어 컨테이너에 넣어짐
 public class MemberController {
@@ -48,5 +54,28 @@ public class MemberController {
         후에 나머지 코드를 건들지 않고 SpringConfig 파일의 구현 클래스 코드 수정만으로 쉽게 변경할 수 있게 하기 위함.
         -> SpringConfig.java에서 MemberRepository에서 return DBMemberReposity()를 반환하는 것으로..
      */
+
+    @GetMapping("/members/new")
+    public String createForm() {
+        return "members/createMemberForm";
+    }
+
+    @PostMapping("/members/new")
+    public String create(MemberForm form) {
+        Member member = new Member();
+        member.setName(form.getName());
+
+        memberService.join(member);
+
+        return "redirect:/";
+    }
+
+    @GetMapping("/members")
+    public String list(Model model) {
+        List<Member> members = memberService.findMembers();
+        model.addAttribute("members", members);
+        return "members/memberList";
+
+    }
 
 }
